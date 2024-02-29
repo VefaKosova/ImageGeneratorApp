@@ -13,47 +13,68 @@ struct PromptView: View {
     @State var promptText: String = ""
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Generate")
-                .font(.largeTitle)
-                .bold()
-                .foregroundStyle(.white)
-            Text("Choose a style")
-                .font(.largeTitle)
-                .bold()
-                .foregroundStyle(.white)
-            GeometryReader { reader in
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack {
-                        ForEach (ImageStyle.allCases, id: \.self) { imageStyle in
-                            Button {
-                                selectedStyle = imageStyle
-                            } label: {
-                                Image(imageStyle.rawValue)
-                                    .resizable()
-                                    .background(Color.blue)
-                                    .scaledToFill()
-                                    .frame(width: reader.size.width * 0.4,
-                                           height: reader.size.width * 0.4 * 1.4)
-                                    .overlay {
-                                        RoundedRectangle(cornerRadius: 20)
-                                            .stroke(Color.yellow, lineWidth: imageStyle == selectedStyle ? 3 : 0)
-                                    }
-                                    .clipShape(RoundedRectangle(cornerRadius: 20))
+        NavigationView {
+            VStack(alignment: .leading) {
+                Text("Generate")
+                    .font(.largeTitle)
+                    .bold()
+                    .foregroundStyle(.white)
+                Text("Choose a style")
+                    .font(.largeTitle)
+                    .bold()
+                    .foregroundStyle(.white)
+                GeometryReader { reader in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach (ImageStyle.allCases, id: \.self) { imageStyle in
+                                Button {
+                                    selectedStyle = imageStyle
+                                } label: {
+                                    Image(imageStyle.rawValue)
+                                        .resizable()
+                                        .background(Color.blue)
+                                        .scaledToFill()
+                                        .frame(width: reader.size.width * 0.4,
+                                               height: reader.size.width * 0.4 * 1.4)
+                                        .overlay {
+                                            RoundedRectangle(cornerRadius: 20)
+                                                .stroke(Color.yellow, lineWidth: imageStyle == selectedStyle ? 3 : 0)
+                                        }
+                                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                                }
                             }
                         }
                     }
                 }
+                Spacer()
+                Text("Enter a prompt")
+                    .font(.title3)
+                    .bold()
+                    .foregroundStyle(.white)
+                TextEditor(text: $promptText)
+                    .scrollContentBackground(.hidden)
+                    .padding()
+                    .background(Color.gray.opacity(0.15))
+                    .cornerRadius(12)
+                    .foregroundStyle(.white)
+                    .tint(Color.yellow)
+                Spacer()
+                VStack(alignment: .center) {
+                    NavigationLink {
+                        GeneratorView(viewModel: .init(prompt: promptText, selectedStyle: selectedStyle))
+                    } label: {
+                        Text("Generate")
+                            .foregroundStyle(.black)
+                            .padding()
+                            .background(Color.yellow)
+                            .clipShape(Capsule())
+                    }
+                }
+                .frame(maxWidth: .infinity)
             }
-            
-            TextEditor(text: $promptText)
-                .scrollContentBackground(.hidden)
-                .padding()
-                .background(Color.gray.opacity(0.15))
-                .cornerRadius(12)
-        }
-        .padding()
+            .padding()
         .background(Color.black.edgesIgnoringSafeArea(.all))
+        }
     }
 }
 
